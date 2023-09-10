@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crescent.WinForms", "Cresce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crescent.WebApi", "Crescent.WebApi\Crescent.WebApi.csproj", "{07318B80-B958-4D4F-9057-F40F327BBF31}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "crescent.react", "crescent.react\crescent.react.esproj", "{39347FD4-9B17-4A92-B7A8-59D984340532}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +21,6 @@ Global
 		{07318B80-B958-4D4F-9057-F40F327BBF31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07318B80-B958-4D4F-9057-F40F327BBF31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07318B80-B958-4D4F-9057-F40F327BBF31}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39347FD4-9B17-4A92-B7A8-59D984340532}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39347FD4-9B17-4A92-B7A8-59D984340532}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39347FD4-9B17-4A92-B7A8-59D984340532}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{39347FD4-9B17-4A92-B7A8-59D984340532}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39347FD4-9B17-4A92-B7A8-59D984340532}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39347FD4-9B17-4A92-B7A8-59D984340532}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
