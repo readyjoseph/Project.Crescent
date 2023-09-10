@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crescent.WinForms", "Crescent.WinForms\Crescent.WinForms.csproj", "{51CE1592-7B9A-4450-B1D0-4B5145BA5B37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crescent.WebApi", "Crescent.WebApi\Crescent.WebApi.csproj", "{07318B80-B958-4D4F-9057-F40F327BBF31}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{51CE1592-7B9A-4450-B1D0-4B5145BA5B37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51CE1592-7B9A-4450-B1D0-4B5145BA5B37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51CE1592-7B9A-4450-B1D0-4B5145BA5B37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51CE1592-7B9A-4450-B1D0-4B5145BA5B37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07318B80-B958-4D4F-9057-F40F327BBF31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07318B80-B958-4D4F-9057-F40F327BBF31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07318B80-B958-4D4F-9057-F40F327BBF31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07318B80-B958-4D4F-9057-F40F327BBF31}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E92F52DF-777C-461D-9BF2-90F715BD2693}
+	EndGlobalSection
+EndGlobal
