@@ -3,11 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crescent.WinForms", "Crescent.WinForms\Crescent.WinForms.csproj", "{51CE1592-7B9A-4450-B1D0-4B5145BA5B37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crescent.WinForms", "Crescent.WinForms\Crescent.WinForms.csproj", "{51CE1592-7B9A-4450-B1D0-4B5145BA5B37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crescent.WebApi", "Crescent.WebApi\Crescent.WebApi.csproj", "{07318B80-B958-4D4F-9057-F40F327BBF31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crescent.WebApi", "Crescent.WebApi\Crescent.WebApi.csproj", "{07318B80-B958-4D4F-9057-F40F327BBF31}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "crescent.react.ui", "Crescent.React.UI\crescent.react.ui.esproj", "{EF8D5EE9-25A8-4E11-99B6-2AD9A5DFDEA9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LINQPad Queries", "LINQPad Queries", "{990354CE-F8EF-4061-9689-875901CDD1A5}"
+	ProjectSection(SolutionItems) = preProject
+		LINQPad Queries\001_Innovation_Day_Chat.linq = LINQPad Queries\001_Innovation_Day_Chat.linq
+		LINQPad Queries\002_Innovation_Day_Conversation.linq = LINQPad Queries\002_Innovation_Day_Conversation.linq
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
