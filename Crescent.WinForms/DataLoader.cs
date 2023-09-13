@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Crescent.WinForms.OpenAI;
 
 namespace Crescent.WinForms
 {
@@ -38,11 +40,21 @@ namespace Crescent.WinForms
                 ShowReadOnly = true
             };
 
+            string csvString = string.Empty;
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 textFileSelector.Text = openFileDialog1.FileName;
                 // Call a method to read and load data from the selected file into the DataGridView
                 LoadDataIntoDataGridView(openFileDialog1.FileName);
+                csvString = System.IO.File.ReadAllText(openFileDialog1.FileName);
+            }
+
+            var openAI = new OpenAI.OpenAI();
+            openAI.SetupChat(csvString);
+            var generatedQuestions = openAI.GetQuestions(string.IsNullOrWhiteSpace(comboBox1.Text) ? string.Empty : comboBox1.Text).Result;
+            foreach ( var question in generatedQuestions )
+            {
+                textBox1.Text += question.QuestionName + Environment.NewLine;
             }
         }
         private void LoadDataIntoDataGridView(string filePath)
@@ -67,6 +79,11 @@ namespace Crescent.WinForms
                 // Bind the DataTable to the DataGridView
                 dataGridView1.DataSource = dataTable;
             }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

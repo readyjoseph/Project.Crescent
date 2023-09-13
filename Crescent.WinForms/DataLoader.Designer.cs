@@ -31,14 +31,17 @@
             browseButton = new Button();
             textFileSelector = new TextBox();
             dataGridView1 = new DataGridView();
+            comboBox1 = new ComboBox();
+            textBox1 = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // browseButton
             // 
-            browseButton.Location = new Point(653, 55);
+            browseButton.Location = new Point(927, 92);
+            browseButton.Margin = new Padding(4, 5, 4, 5);
             browseButton.Name = "browseButton";
-            browseButton.Size = new Size(75, 23);
+            browseButton.Size = new Size(107, 38);
             browseButton.TabIndex = 0;
             browseButton.Text = "Browse";
             browseButton.UseVisualStyleBackColor = true;
@@ -46,28 +49,52 @@
             // 
             // textFileSelector
             // 
-            textFileSelector.Location = new Point(36, 55);
+            textFileSelector.Location = new Point(51, 92);
+            textFileSelector.Margin = new Padding(4, 5, 4, 5);
             textFileSelector.Name = "textFileSelector";
-            textFileSelector.Size = new Size(593, 23);
+            textFileSelector.Size = new Size(845, 31);
             textFileSelector.TabIndex = 1;
             // 
             // dataGridView1
             // 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(39, 90);
+            dataGridView1.Location = new Point(51, 140);
+            dataGridView1.Margin = new Padding(4, 5, 4, 5);
             dataGridView1.Name = "dataGridView1";
+            dataGridView1.RowHeadersWidth = 62;
             dataGridView1.RowTemplate.Height = 25;
-            dataGridView1.Size = new Size(749, 359);
+            dataGridView1.Size = new Size(1070, 157);
             dataGridView1.TabIndex = 2;
+            // 
+            // comboBox1
+            // 
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Items.AddRange(new object[] { "Bullet point list of reports that match the data" });
+            comboBox1.Location = new Point(51, 51);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(647, 33);
+            comboBox1.TabIndex = 3;
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(51, 305);
+            textBox1.Multiline = true;
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(1070, 433);
+            textBox1.TabIndex = 4;
             // 
             // DataLoader
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1143, 750);
+            Controls.Add(textBox1);
+            Controls.Add(comboBox1);
             Controls.Add(dataGridView1);
             Controls.Add(textFileSelector);
             Controls.Add(browseButton);
+            Margin = new Padding(4, 5, 4, 5);
             Name = "DataLoader";
             Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
@@ -80,6 +107,8 @@
         private Button browseButton;
         private TextBox textFileSelector;
         private DataGridView dataGridView1;
+        private ComboBox comboBox1;
+        private TextBox textBox1;
         //private Data textFileSelector;
     }
 }
