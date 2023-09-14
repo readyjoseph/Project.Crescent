@@ -15,6 +15,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LINQPad Queries", "LINQPad 
 		LINQPad Queries\002_Innovation_Day_Conversation.linq = LINQPad Queries\002_Innovation_Day_Conversation.linq
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{46D577A9-8219-4B46-84D3-3D0123CFFF69}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestData", "TestData", "{FE354E2F-E2BB-4EAA-AEF7-2E00D4CAB47D}"
+	ProjectSection(SolutionItems) = preProject
+		TestData\TP_Applications_For_AskCSV_2.txt = TestData\TP_Applications_For_AskCSV_2.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +45,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FE354E2F-E2BB-4EAA-AEF7-2E00D4CAB47D} = {46D577A9-8219-4B46-84D3-3D0123CFFF69}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E92F52DF-777C-461D-9BF2-90F715BD2693}
