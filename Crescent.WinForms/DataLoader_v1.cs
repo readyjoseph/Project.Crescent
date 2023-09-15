@@ -21,8 +21,8 @@ namespace Crescent.WinForms
     public partial class DataLoader_v1 : Form
     {
         #region Variables
-        public const string apiKey = "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";
-        public const string organisation = "org-BtV4Ff7q0LPWT1KgS2Q1BWb8";
+        public const string apiKey = "";
+        public const string organisation = "";
         public static OpenAIAPI api => new OpenAIAPI(apiKey);
         public static ChatEndpoint chatEndpoint;
         public static Conversation conversation;
