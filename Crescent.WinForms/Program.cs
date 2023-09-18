@@ -11,7 +11,7 @@ namespace Crescent.WinForms
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new DataLoader_v1());
+            Application.Run(new DataLoader_v2());
         }
     }
 }

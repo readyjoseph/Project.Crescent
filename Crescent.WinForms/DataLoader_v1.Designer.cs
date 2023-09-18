@@ -28,27 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             splitContainer1 = new SplitContainer();
             label1 = new Label();
             dataGridView1 = new DataGridView();
             textFileSelector = new TextBox();
             browseButton = new Button();
+            btnGetQuestions = new Button();
+            chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             cmbShowResultsAs = new ComboBox();
             label4 = new Label();
             cmbAnalysisType = new ComboBox();
             label5 = new Label();
             txtResult = new TextBox();
-            txtFreeText = new TextBox();
             cmbFixedQuestions = new ComboBox();
             label3 = new Label();
             label2 = new Label();
             panel1 = new Panel();
             btnAnalyze = new Button();
+            txtFreeText = new TextBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)chart1).BeginInit();
             SuspendLayout();
             // 
             // splitContainer1
@@ -67,19 +73,21 @@
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(btnGetQuestions);
+            splitContainer1.Panel2.Controls.Add(chart1);
             splitContainer1.Panel2.Controls.Add(cmbShowResultsAs);
             splitContainer1.Panel2.Controls.Add(label4);
             splitContainer1.Panel2.Controls.Add(cmbAnalysisType);
             splitContainer1.Panel2.Controls.Add(label5);
             splitContainer1.Panel2.Controls.Add(txtResult);
-            splitContainer1.Panel2.Controls.Add(txtFreeText);
             splitContainer1.Panel2.Controls.Add(cmbFixedQuestions);
             splitContainer1.Panel2.Controls.Add(label3);
             splitContainer1.Panel2.Controls.Add(label2);
             splitContainer1.Panel2.Controls.Add(panel1);
             splitContainer1.Panel2.Controls.Add(btnAnalyze);
-            splitContainer1.Size = new Size(859, 677);
-            splitContainer1.SplitterDistance = 349;
+            splitContainer1.Panel2.Controls.Add(txtFreeText);
+            splitContainer1.Size = new Size(859, 770);
+            splitContainer1.SplitterDistance = 254;
             splitContainer1.TabIndex = 4;
             // 
             // label1
@@ -99,7 +107,7 @@
             dataGridView1.Location = new Point(0, 39);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowTemplate.Height = 25;
-            dataGridView1.Size = new Size(856, 307);
+            dataGridView1.Size = new Size(856, 212);
             dataGridView1.TabIndex = 7;
             // 
             // textFileSelector
@@ -122,6 +130,33 @@
             browseButton.UseVisualStyleBackColor = true;
             browseButton.Click += browseButton_Click;
             // 
+            // btnGetQuestions
+            // 
+            btnGetQuestions.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            btnGetQuestions.Location = new Point(9, 12);
+            btnGetQuestions.Name = "btnGetQuestions";
+            btnGetQuestions.Size = new Size(147, 23);
+            btnGetQuestions.TabIndex = 15;
+            btnGetQuestions.Text = "Get Insight Suggestions";
+            btnGetQuestions.UseVisualStyleBackColor = true;
+            btnGetQuestions.Click += btnGetQuestions_Click;
+            // 
+            // chart1
+            // 
+            chartArea1.Name = "ChartArea1";
+            chart1.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            chart1.Legends.Add(legend1);
+            chart1.Location = new Point(0, 276);
+            chart1.Name = "chart1";
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            chart1.Series.Add(series1);
+            chart1.Size = new Size(859, 236);
+            chart1.TabIndex = 14;
+            chart1.Text = "chart1";
+            // 
             // cmbShowResultsAs
             // 
             cmbShowResultsAs.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -130,6 +165,7 @@
             cmbShowResultsAs.Name = "cmbShowResultsAs";
             cmbShowResultsAs.Size = new Size(153, 23);
             cmbShowResultsAs.TabIndex = 13;
+            cmbShowResultsAs.Visible = false;
             // 
             // label4
             // 
@@ -140,15 +176,17 @@
             label4.Size = new Size(95, 15);
             label4.TabIndex = 12;
             label4.Text = "Show Results as";
+            label4.Visible = false;
             // 
             // cmbAnalysisType
             // 
             cmbAnalysisType.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbAnalysisType.FormattingEnabled = true;
-            cmbAnalysisType.Location = new Point(107, 9);
+            cmbAnalysisType.Location = new Point(370, 36);
             cmbAnalysisType.Name = "cmbAnalysisType";
             cmbAnalysisType.Size = new Size(153, 23);
             cmbAnalysisType.TabIndex = 11;
+            cmbAnalysisType.Visible = false;
             cmbAnalysisType.SelectedIndexChanged += cmbAnalysisType_SelectedIndexChanged;
             // 
             // label5
@@ -163,46 +201,40 @@
             // 
             // txtResult
             // 
-            txtResult.Location = new Point(3, 200);
+            txtResult.Location = new Point(3, 276);
             txtResult.Multiline = true;
             txtResult.Name = "txtResult";
             txtResult.ScrollBars = ScrollBars.Both;
-            txtResult.Size = new Size(853, 121);
+            txtResult.Size = new Size(853, 236);
             txtResult.TabIndex = 9;
-            // 
-            // txtFreeText
-            // 
-            txtFreeText.BorderStyle = BorderStyle.FixedSingle;
-            txtFreeText.Location = new Point(266, 9);
-            txtFreeText.Name = "txtFreeText";
-            txtFreeText.Size = new Size(433, 23);
-            txtFreeText.TabIndex = 7;
             // 
             // cmbFixedQuestions
             // 
             cmbFixedQuestions.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbFixedQuestions.FormattingEnabled = true;
-            cmbFixedQuestions.Location = new Point(266, 9);
+            cmbFixedQuestions.Location = new Point(529, 36);
             cmbFixedQuestions.Name = "cmbFixedQuestions";
-            cmbFixedQuestions.Size = new Size(433, 23);
+            cmbFixedQuestions.Size = new Size(109, 23);
             cmbFixedQuestions.TabIndex = 5;
+            cmbFixedQuestions.Visible = false;
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label3.Location = new Point(7, 12);
+            label3.Location = new Point(296, 41);
             label3.Name = "label3";
             label3.Size = new Size(79, 15);
             label3.TabIndex = 4;
             label3.Text = "Analysis Type";
+            label3.Visible = false;
             // 
             // label2
             // 
             label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label2.Location = new Point(9, 182);
+            label2.Location = new Point(9, 258);
             label2.Name = "label2";
             label2.Size = new Size(42, 15);
             label2.TabIndex = 3;
@@ -213,13 +245,13 @@
             panel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panel1.Location = new Point(3, 86);
             panel1.Name = "panel1";
-            panel1.Size = new Size(853, 93);
+            panel1.Size = new Size(853, 169);
             panel1.TabIndex = 2;
             // 
             // btnAnalyze
             // 
             btnAnalyze.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            btnAnalyze.Location = new Point(720, 8);
+            btnAnalyze.Location = new Point(720, 36);
             btnAnalyze.Name = "btnAnalyze";
             btnAnalyze.Size = new Size(125, 23);
             btnAnalyze.TabIndex = 0;
@@ -227,11 +259,20 @@
             btnAnalyze.UseVisualStyleBackColor = true;
             btnAnalyze.Click += btnAnalyze_Click;
             // 
+            // txtFreeText
+            // 
+            txtFreeText.BorderStyle = BorderStyle.FixedSingle;
+            txtFreeText.Location = new Point(529, 36);
+            txtFreeText.Name = "txtFreeText";
+            txtFreeText.Size = new Size(109, 23);
+            txtFreeText.TabIndex = 7;
+            txtFreeText.Visible = false;
+            // 
             // DataLoader_v1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(860, 680);
+            ClientSize = new Size(860, 773);
             Controls.Add(splitContainer1);
             Name = "DataLoader_v1";
             Text = "Open AI CSV Data Analyzer";
@@ -243,6 +284,7 @@
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)chart1).EndInit();
             ResumeLayout(false);
         }
 
@@ -262,6 +304,8 @@
         private ComboBox cmbAnalysisType;
         private ComboBox cmbShowResultsAs;
         private Label label4;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private Button btnGetQuestions;
 
         #endregion
         //private Data textFileSelector;

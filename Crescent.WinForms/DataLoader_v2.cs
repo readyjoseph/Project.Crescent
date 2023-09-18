@@ -5,10 +5,12 @@ using OpenAI_API.Completions;
 using System.Configuration;
 using Crescent.WinForms.Model;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.ComponentModel.Design.Serialization;
+using System.Windows.Forms.VisualStyles;
 
 namespace Crescent.WinForms
 {
-    public partial class DataLoader_v1 : Form
+    public partial class DataLoader_v2 : Form
     {
         #region Variables
         private string apiKey = string.Empty;
@@ -19,6 +21,7 @@ namespace Crescent.WinForms
         //public ChatResult chat;
         private static string filePath;
         private static string fileName => (filePath?.Length > 0 ? System.IO.Path.GetFileName(filePath) : "");
+        private static Font fontHeader => new Font("Segoe UI", 9, FontStyle.Bold);
 
         //private static string jsonFilePath => System.IO.Path.GetDirectoryName(filePath) + "\\" + System.IO.Path.GetFileNameWithoutExtension(filePath) + ".jsonl";
         //private static string jsonFileName => System.IO.Path.GetFileName(jsonFilePath);
@@ -28,7 +31,7 @@ namespace Crescent.WinForms
         #endregion
 
         #region Constructor
-        public DataLoader_v1()
+        public DataLoader_v2()
         {
             InitializeComponent();
         }
@@ -37,33 +40,36 @@ namespace Crescent.WinForms
         #region Event Handlers
         private void DataLoader_Load(object sender, EventArgs e)
         {
-            cmbAnalysisType.Items.Clear();
-            cmbAnalysisType.Items.Add("Fixed Questions");
-            cmbAnalysisType.Items.Add("Free Text");
+            //cmbAnalysisType.Items.Clear();
+            //cmbAnalysisType.Items.Add("Fixed Questions");
+            //cmbAnalysisType.Items.Add("Free Text");
 
-            cmbAnalysisType.SelectedIndex = 0;
-            cmbAnalysisType_SelectedIndexChanged(cmbAnalysisType, new EventArgs());
+            //cmbAnalysisType.SelectedIndex = 0;
+            //cmbAnalysisType_SelectedIndexChanged(cmbAnalysisType, new EventArgs());
 
-            cmbFixedQuestions.Items.Clear();
-            cmbFixedQuestions.Items.Add("Trend questions");
-            cmbFixedQuestions.Items.Add("Grouped queries");
-            cmbFixedQuestions.Items.Add("Summary questions");
-            cmbFixedQuestions.SelectedIndex = 0;
+            //cmbFixedQuestions.Items.Clear();
+            //cmbFixedQuestions.Items.Add("Trend questions");
+            //cmbFixedQuestions.Items.Add("Grouped queries");
+            //cmbFixedQuestions.Items.Add("Summary questions");
+            //cmbFixedQuestions.SelectedIndex = 0;
 
-            cmbShowResultsAs.Items.Clear();
-            cmbShowResultsAs.Items.Add("Text");
-            cmbShowResultsAs.Items.Add("Chart");
-            cmbShowResultsAs.SelectedIndex = 1;
+            //cmbShowResultsAs.Items.Clear();
+            //cmbShowResultsAs.Items.Add("Text");
+            //cmbShowResultsAs.Items.Add("Chart");
+            //cmbShowResultsAs.SelectedIndex = 1;
 
             apiKey = ConfigurationManager.AppSettings["OpenAI.APIKey"].ToString();
             organisation = ConfigurationManager.AppSettings["OpenAI.OrganisationId"].ToString();
             reportsList = ConfigurationManager.AppSettings["TestData.ReportsPath"].ToString();
 
             api = new OpenAIAPI(apiKey);
+
+            lblResult.Visible = false;
+            txtResult.Visible = false;
+            chartControl.Visible = false;
         }
         private void browseButton_Click(object sender, EventArgs e)
         {
-
             OpenFileDialog openFileDialog1 = new OpenFileDialog
             {
                 InitialDirectory = @"D:\",
@@ -73,7 +79,7 @@ namespace Crescent.WinForms
                 CheckPathExists = true,
 
                 DefaultExt = "txt",
-                Filter = "txt files (*.txt)|*.txt|CSV files (*.csv)|*.CSV",
+                Filter = "Text files (*.txt)|*.txt|CSV files (*.csv)|*.CSV",
                 FilterIndex = 2,
                 RestoreDirectory = true,
 
@@ -87,6 +93,10 @@ namespace Crescent.WinForms
                 // Call a method to read and load data from the selected file into the DataGridView
                 LoadDataIntoDataGridView(openFileDialog1.FileName);
                 filePath = openFileDialog1.FileName;
+
+                lblResult.Visible = false;
+                txtResult.Visible = false;
+                chartControl.Visible = false;
             }
         }
 
@@ -94,102 +104,93 @@ namespace Crescent.WinForms
         {
             List<Question> questions = null;
             string answer = string.Empty;
-            //if (cmbAnalysisType.Items[cmbAnalysisType.SelectedIndex] as string == "Fixed Questions")
-            //{
-            //    questions = GetQuestions("List of " + cmbFixedQuestions.Items[cmbFixedQuestions.SelectedIndex]).Result;
-            //}
-            //else
-            //{
-            //    questions = GetQuestions(txtFreeText.Text).Result;
-            //}
+            loadedFile = false;
 
-            questions = GetQuestions("Give me questions I can plot on a chart").Result;
+            questions = GetQuestions("Give me questions I can plot on a chart, and then under the heading Related Reports with restarted numbering list my reports which closely match the input data. Don't give me any footnotes or explanations").Result;
 
             panel1.Controls.Clear();
+
             if (questions?.Count > 0)
             {
                 int top = 0;
-                foreach (var question in questions)
-                {
-                    LinkLabel btn = new LinkLabel();
-                    btn.Text = $"{question.QuestionIndex} {question.QuestionName}";
-                    btn.Tag = question.QuestionIndex;
-                    btn.Left = 20;
-                    btn.Top = top;
-                    btn.Width = panel1.Width - 50;
-                    top += 20;
-                    btn.Click += (sender, e) =>
-                    {
-                        answer = GetQuestionResponse(Convert.ToByte((sender as LinkLabel).Tag), string.Empty, cmbShowResultsAs.Items[cmbShowResultsAs.SelectedIndex] as string).Result;
-                        DisplayResults(answer);
-                    };
-                    panel1.Controls.Add(btn);
-                }
-                panel1.AutoScroll = true;
-            }
-        }
-        private void btnAnalyze_Click(object sender, EventArgs e)
-        {
-            CompletionResult completions = null;
-            List<Question> questions = null;
-            string answer = string.Empty;
-            //string question = string.Empty;
-            if (!loadedFile)
-                SetupChat();
+                bool relatedReport = false;
 
-            if (cmbAnalysisType.Items[cmbAnalysisType.SelectedIndex] as string == "Fixed Questions")
-            {
-                questions = GetQuestions("List of " + cmbFixedQuestions.Items[cmbFixedQuestions.SelectedIndex]).Result;
-                panel1.Controls.Clear();
-                int top = 0;
+                Label header = new Label();
+                header.Text = $"Questions";
+                header.Left = 20;
+                header.Top = top;
+                header.Width = panel1.Width - 50;
+                header.Font = fontHeader;
+                top += 20;
+                panel1.Controls.Add(header);
+
                 foreach (var question in questions)
                 {
-                    LinkLabel btn = new LinkLabel();
-                    btn.Text = $"{question.QuestionIndex} {question.QuestionName}";
-                    btn.Tag = question.QuestionIndex;
-                    btn.Left = 20;
-                    btn.Top = top;
-                    btn.Width = panel1.Width - 50;
-                    top += 20;
-                    btn.Click += (sender, e) =>
+                    if (question.GroupName.Contains("Reports") && question.QuestionIndex == 1)
                     {
-                        answer = GetQuestionResponse(Convert.ToByte((sender as LinkLabel).Tag), string.Empty, cmbShowResultsAs.Items[cmbShowResultsAs.SelectedIndex] as string).Result;
-                        DisplayResults(answer);
-                    };
-                    panel1.Controls.Add(btn);
+                        relatedReport = true;
+                        header = new Label();
+                        header.Text = $"{question.GroupName}";
+                        header.Left = 20;
+                        header.Top = top;
+                        header.Width = panel1.Width - 50;
+                        header.Font = fontHeader;
+                        top += 20;
+                        panel1.Controls.Add(header);                        
+                    }
+
+                    if (!relatedReport)
+                    {
+                        LinkLabel btn = new LinkLabel();
+                        btn.Text = $"{question.QuestionIndex} {question.QuestionName}";
+                        btn.Tag = "Question:" + question.QuestionIndex;
+                        btn.Left = 20;
+                        btn.Top = top;
+                        btn.Width = panel1.Width - 50;
+                        top += 20;
+                        btn.Click += (sender, e) =>
+                        {
+                            string[] tagsParts = Convert.ToString((sender as LinkLabel).Tag).Split(new string[] { ":"}, StringSplitOptions.RemoveEmptyEntries);
+                            if (tagsParts?.Length > 1)
+                            {
+                                answer = GetQuestionResponse(Convert.ToByte(tagsParts[1]), string.Empty, "Chart").Result;
+                                lblResult.Text = $"Result - {question.QuestionName}";
+                                DisplayResults(answer);
+                            }
+                        };
+                        panel1.Controls.Add(btn);
+                    }
+                    else
+                    {
+                        LinkLabel btn = new LinkLabel();
+                        btn.Text = $"{question.QuestionIndex} {question.QuestionName}";
+                        btn.Tag = "Report:" + question.QuestionIndex;
+                        btn.Left = 20;
+                        btn.Top = top;
+                        btn.Width = panel1.Width - 50;
+                        top += 20;
+                        btn.Click += (sender, e) =>
+                        {
+                            //string[] tagsParts = Convert.ToString((sender as LinkLabel).Tag).Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                            //if (tagsParts?.Length > 1)
+                            //{
+                            //    answer = GetQuestionResponse(Convert.ToByte(tagsParts[1]), string.Empty, "Chart").Result;
+                            //    DisplayResults(answer);
+                            //}
+                        };
+                        panel1.Controls.Add(btn);
+                    }
                 }
                 panel1.AutoScroll = true;
-            }
-            else
-            {
-                answer = GetQuestionResponse(0, txtFreeText.Text, cmbShowResultsAs.Items[cmbShowResultsAs.SelectedIndex] as string).Result;
-                DisplayResults(answer);
             }
         }
         private void DisplayResults(string answer)
         {
+            lblResult.Visible = true;
             txtResult.Text = "";
-            chart1.Series.Clear();
-
-            if (cmbShowResultsAs.Items[cmbShowResultsAs.SelectedIndex] as string == "Text")
-            {
-                txtResult.Text = "";
-                txtResult.Text = answer;
-            }
-            else if (cmbShowResultsAs.Items[cmbShowResultsAs.SelectedIndex] as string == "Chart")
-            {
-                ParseResultToChart(answer);
-            }
+            chartControl.Series.Clear();
+            ParseResultToChart(answer);
         }
-        //private void btnFreeText_Click(object sender, EventArgs e)
-        //{
-        //    if (!loadedFile)
-        //        SetupChat();
-
-        //    string answer = GetQuestionResponse(0, txtFreeText.Text).Result;
-        //    txtResult.Text = "";
-        //    txtResult.Text = answer;
-        //}
         #endregion
 
         #region Private Methods
@@ -198,25 +199,69 @@ namespace Crescent.WinForms
         private void ParseResultToChart(string result)
         {
             string[] results = new string[] { };
-            List<KeyValuePair<string, int>> chartInput = new List<KeyValuePair<string, int>>();
+            List<KeyValuePair<string, double>> chartInput = new List<KeyValuePair<string, double>>();
+            txtResult.Visible = false;
+            chartControl.Visible = false;
 
-            results = result.Split(new string[] { "\n" }, StringSplitOptions.None);
-
-            if (results?.Length > 0)
+            try
             {
-                if (results[0].IndexOf(',') >= 0)
+                results = result.Split(new string[] { "\n" }, StringSplitOptions.None);
+
+                if (results?.Length > 0)
                 {
-                    chart1.Series.Clear();
-                    foreach (string res in results)
+                    if (results[0].IndexOf(',') >= 0)
                     {
-                        var axes = res.Split(new string[] { "," }, StringSplitOptions.None);
-                        chartInput.Add(new KeyValuePair<string, int>(axes[0], Convert.ToInt32(axes[1])));
-                        chart1.Series.Add(new System.Windows.Forms.DataVisualization.Charting.Series(axes[0], Convert.ToInt32(axes[1])));
+                        int index = 0;
+                        foreach (string res in results)
+                        {
+                            var axes = res.Split(new string[] { "," }, StringSplitOptions.None);
+                            if (index == 0)
+                            {
+                                if (Double.TryParse(axes[1], out double output))
+                                {
+                                    chartInput.Add(new KeyValuePair<string, double>(axes[0], Convert.ToDouble(axes[1])));
+                                }
+                            }
+                            else
+                            {
+                                chartInput.Add(new KeyValuePair<string, double>(axes[0], Convert.ToDouble(axes[1])));
+                            }
+                            index++;
+                        }
                     }
                 }
             }
-            chart1.Visible = chartInput.Count() > 0;
-            txtResult.Visible = chartInput.Count() == 0;
+            catch (Exception ex)
+            {
+                txtResult.Text = result;
+                txtResult.Visible = true;
+                MessageBox.Show("I am sorry, I could not parse the results onto a chart, please see the results below displayed as text");
+                return;
+            }
+
+            if (chartInput.Count > 0)
+            {
+                this.chartControl.Series.Clear();
+
+                // Data arrays
+                string[] seriesArray = chartInput.Select(s => s.Key).ToArray();
+                double[] pointsArray = chartInput.Select(s => s.Value).ToArray();
+
+                // Set palette
+                this.chartControl.Palette = ChartColorPalette.BrightPastel;
+
+                // Set title
+                this.chartControl.Titles.Clear();
+                this.chartControl.Titles.Add("Applications");
+
+                // Add series.
+                for (int i = 0; i < seriesArray.Length; i++)
+                {
+                    Series series = this.chartControl.Series.Add(seriesArray[i]);
+                    series.Points.Add(pointsArray[i]);
+                }
+                chartControl.Visible = true;
+            }
         }
         private void LoadDataIntoDataGridView(string filePath)
         {
@@ -228,7 +273,7 @@ namespace Crescent.WinForms
                 string[] columns = reader.ReadLine().Split(','); //('\t'); // Adjust the delimiter as needed
                 foreach (string column in columns)
                 {
-                    dataTable.Columns.Add(column.Replace("_", " "));
+                    dataTable.Columns.Add(TitleCase(column.Replace("_", " ")));
                 }
 
                 while (!reader.EndOfStream)
@@ -245,6 +290,14 @@ namespace Crescent.WinForms
                 }
             }
         }
+        private string TitleCase(string input)
+        {
+            string output = string.Empty;
+            string[] tokens = input.Split(new string[] { " " }, StringSplitOptions.None);
+            string[] tokensUpper = tokens.ToList().Select(s => s[0].ToString().ToUpper() + s.Substring(1, s.Length - 1)).ToArray();
+            output = string.Join(" ", tokensUpper);
+            return output;
+        }
         private void SetupChat()
         {
             string message = string.Empty;
@@ -256,6 +309,12 @@ namespace Crescent.WinForms
                 conversation = api.Chat.CreateConversation();
                 loadedFile = true;
                 conversation.AppendUserInput("This is the input data." + input);
+
+                if (System.IO.File.Exists(reportsList))
+                {
+                    string reports = System.IO.File.ReadAllText(reportsList);
+                    conversation.AppendUserInput("This is my list of reports." + reports);
+                }
             }
         }
 
@@ -315,12 +374,22 @@ namespace Crescent.WinForms
                 if (questionsList?.Length > 0)
                 {
                     byte questionIndex = 0;
+                    bool isReport = false;
+                    byte groupIndex = 1;
                     foreach (var q in questionsList)
                     {
                         string[] parts = q.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts.Length > 0)
+                        if (parts.Length == 1 && parts[0].Contains("Related Reports"))
                         {
-                            Question newQuestion = new Question(++questionIndex, (parts.Length >= 2 ? parts[1] : parts[0]));
+                            isReport = true;
+                            questionIndex = 0;
+                            groupIndex = 2;
+                            continue;
+                        }
+
+                        if (parts.Length > 1)
+                        {
+                            Question newQuestion = new Question(groupIndex, (!isReport ? "Questions" : "Reports"), ++questionIndex, (parts.Length >= 2 ? parts[1] : parts[0]));
                             questions.Add(newQuestion);
                         }
                     }
@@ -355,7 +424,7 @@ namespace Crescent.WinForms
                 try
                 {
                     conversation.AppendUserInput(question);
-                    conversation.AppendUserInput("Give me the results only without any explanation");
+                    conversation.AppendUserInput("Give me the results only without any explanation or column delimiters");
 
                     var task = Task.Run(() =>
                     {
@@ -377,11 +446,5 @@ namespace Crescent.WinForms
             return response;
         }
         #endregion
-
-        private void cmbAnalysisType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //txtFreeText.Visible = cmbAnalysisType.Items[cmbAnalysisType.SelectedIndex] as string == "Free Text";
-            //cmbFixedQuestions.Visible = cmbAnalysisType.Items[cmbAnalysisType.SelectedIndex] as string == "Fixed Questions";
-        }
     }
 }
