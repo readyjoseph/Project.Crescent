@@ -1,12 +1,10 @@
 ﻿using OpenAI_API;
 using OpenAI_API.Chat;
 using System.Data;
-using OpenAI_API.Completions;
 using System.Configuration;
 using Crescent.WinForms.Model;
 using System.Windows.Forms.DataVisualization.Charting;
-using System.ComponentModel.Design.Serialization;
-using System.Windows.Forms.VisualStyles;
+using Crescent.WinForms.Helpers;
 
 namespace Crescent.WinForms
 {
@@ -16,18 +14,14 @@ namespace Crescent.WinForms
         private string apiKey = string.Empty;
         private string organisation = "org-BtV4Ff7q0LPWT1KgS2Q1BWb8";
         private static OpenAIAPI api;
-        private static ChatEndpoint chatEndpoint;
+        private static ChatEndpoint? chatEndpoint;
         private static Conversation conversation;
-        //public ChatResult chat;
+        private static string reportsList;
+        private static bool loadedFile = false;
         private static string filePath;
         private static string fileName => (filePath?.Length > 0 ? System.IO.Path.GetFileName(filePath) : "");
         private static Font fontHeader => new Font("Segoe UI", 9, FontStyle.Bold);
 
-        //private static string jsonFilePath => System.IO.Path.GetDirectoryName(filePath) + "\\" + System.IO.Path.GetFileNameWithoutExtension(filePath) + ".jsonl";
-        //private static string jsonFileName => System.IO.Path.GetFileName(jsonFilePath);
-        private static string reportsList;
-        private static bool loadedFile = false;
-        private static bool loadedReports = false;
         #endregion
 
         #region Constructor
@@ -35,34 +29,27 @@ namespace Crescent.WinForms
         {
             InitializeComponent();
         }
+        ~DataLoader_v2()
+        {
+            if (chatEndpoint != null) 
+            {
+                chatEndpoint = null;
+            }
+        }
         #endregion
 
         #region Event Handlers
         private void DataLoader_Load(object sender, EventArgs e)
         {
-            //cmbAnalysisType.Items.Clear();
-            //cmbAnalysisType.Items.Add("Fixed Questions");
-            //cmbAnalysisType.Items.Add("Free Text");
-
-            //cmbAnalysisType.SelectedIndex = 0;
-            //cmbAnalysisType_SelectedIndexChanged(cmbAnalysisType, new EventArgs());
-
-            //cmbFixedQuestions.Items.Clear();
-            //cmbFixedQuestions.Items.Add("Trend questions");
-            //cmbFixedQuestions.Items.Add("Grouped queries");
-            //cmbFixedQuestions.Items.Add("Summary questions");
-            //cmbFixedQuestions.SelectedIndex = 0;
-
-            //cmbShowResultsAs.Items.Clear();
-            //cmbShowResultsAs.Items.Add("Text");
-            //cmbShowResultsAs.Items.Add("Chart");
-            //cmbShowResultsAs.SelectedIndex = 1;
-
-            apiKey = ConfigurationManager.AppSettings["OpenAI.APIKey"].ToString();
+            apiKey = ConfigurationManager.AppSettings["OpenAI.APIKey.Encrypted"].ToString();
             organisation = ConfigurationManager.AppSettings["OpenAI.OrganisationId"].ToString();
             reportsList = ConfigurationManager.AppSettings["TestData.ReportsPath"].ToString();
 
-            api = new OpenAIAPI(apiKey);
+            string apiKeyUnencrypted = EncryptionHelper.Decrypt(apiKey);
+            if (!String.IsNullOrWhiteSpace(apiKeyUnencrypted))
+            {
+                api = new OpenAIAPI(apiKeyUnencrypted);
+            }
 
             lblResult.Visible = false;
             txtResult.Visible = false;
@@ -171,12 +158,15 @@ namespace Crescent.WinForms
                         top += 20;
                         btn.Click += (sender, e) =>
                         {
-                            //string[] tagsParts = Convert.ToString((sender as LinkLabel).Tag).Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
-                            //if (tagsParts?.Length > 1)
-                            //{
-                            //    answer = GetQuestionResponse(Convert.ToByte(tagsParts[1]), string.Empty, "Chart").Result;
-                            //    DisplayResults(answer);
-                            //}
+                            string reportName = question.QuestionName;
+                            if (reportName.Contains("RC"))
+                            {
+                                MessageBox.Show("This report will be opened in Ready Community.");
+                            }
+                            else if (reportName.Contains("BI"))
+                            {
+                                MessageBox.Show("This report will be opened in Power BI.");
+                            }
                         };
                         panel1.Controls.Add(btn);
                     }
@@ -327,71 +317,51 @@ namespace Crescent.WinForms
                 SetupChat();
             }
 
-            if (question.StartsWith("Bullet point list of reports"))
-            {
-                //		chat.AppendSystemMessage("List only relevant reports");
-                //		chat.AppendUserInput(query);
-                //		var response = await chat.GetResponseFromChatbotAsync().ConfigureAwait(false);
-                //		
-                //		string[] questionsList = response.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                //		if (questionsList?.Length > 0)
-                //		{
-                //			byte questionIndex = 0;
-                //			foreach (var question in questionsList)
-                //			{
-                //				Question newQuestion = new Question(++questionIndex, question);
-                //				questions.Add(newQuestion);
-                //			}
-                //		}
-            }
-            else
-            {
-                question = question + " from input data";
-                conversation.AppendUserInput(question);
-                string response = string.Empty;
+            question = question + " from input data";
+            conversation.AppendUserInput(question);
+            string response = string.Empty;
 
-                try
+            try
+            {
+                var task = Task.Run(() =>
                 {
-                    var task = Task.Run(() =>
-                    {
-                        response = conversation.GetResponseFromChatbotAsync().Result;
-                    });
+                    response = conversation.GetResponseFromChatbotAsync().Result;
+                });
 
-                    while (task.Status != TaskStatus.RanToCompletion && task.Status != TaskStatus.Faulted)
+                while (task.Status != TaskStatus.RanToCompletion && task.Status != TaskStatus.Faulted)
+                {
+                    Console.WriteLine("Thread ID: {0}, Status: {1}", Thread.CurrentThread.ManagedThreadId, task.Status);
+                }
+
+                if (response == "") ;
+                //response = task.Result;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            string[] questionsList = response.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            if (questionsList?.Length > 0)
+            {
+                byte questionIndex = 0;
+                bool isReport = false;
+                byte groupIndex = 1;
+                foreach (var q in questionsList)
+                {
+                    string[] parts = q.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 1 && parts[0].Contains("Related Reports"))
                     {
-                        Console.WriteLine("Thread ID: {0}, Status: {1}", Thread.CurrentThread.ManagedThreadId, task.Status);
+                        isReport = true;
+                        questionIndex = 0;
+                        groupIndex = 2;
+                        continue;
                     }
 
-                    if (response == "") ;
-                    //response = task.Result;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-
-                string[] questionsList = response.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                if (questionsList?.Length > 0)
-                {
-                    byte questionIndex = 0;
-                    bool isReport = false;
-                    byte groupIndex = 1;
-                    foreach (var q in questionsList)
+                    if (parts.Length > 1)
                     {
-                        string[] parts = q.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts.Length == 1 && parts[0].Contains("Related Reports"))
-                        {
-                            isReport = true;
-                            questionIndex = 0;
-                            groupIndex = 2;
-                            continue;
-                        }
-
-                        if (parts.Length > 1)
-                        {
-                            Question newQuestion = new Question(groupIndex, (!isReport ? "Questions" : "Reports"), ++questionIndex, (parts.Length >= 2 ? parts[1] : parts[0]));
-                            questions.Add(newQuestion);
-                        }
+                        Question newQuestion = new Question(groupIndex, (!isReport ? "Questions" : "Reports"), ++questionIndex, (parts.Length >= 2 ? parts[1] : parts[0]));
+                        questions.Add(newQuestion);
                     }
                 }
             }
